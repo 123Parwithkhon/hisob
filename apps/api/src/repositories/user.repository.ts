@@ -1,29 +1,16 @@
 import { prisma } from '../config/prisma.js';
-import type { Theme } from '@prisma/client';
 import type { RegisterDto } from '../validators/auth.validator.js';
 
 export class UserRepository {
   async findByEmail(email: string) {
     return prisma.user.findUnique({
       where: { email },
-      include: { refreshTokens: true },
     });
   }
 
   async findById(id: string) {
     return prisma.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        phone: true,
-        avatar: true,
-        role: true,
-        timezone: true,
-        theme: true,
-        createdAt: true,
-      },
     });
   }
 
@@ -32,70 +19,30 @@ export class UserRepository {
       data: {
         email: dto.email,
         name: dto.name,
-        phone: dto.phone,
         passwordHash,
       },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        phone: true,
-        createdAt: true,
-      },
     });
   }
 
-  async updatePassword(userId: string, passwordHash: string) {
+     async update(id: string, data: { 
+    name?: string; 
+    phone?: string; 
+    timezone?: string; 
+    theme?: string; 
+    passwordHash?: string;
+    currency?: string;
+  }) {
+    // Разделяем поля чтобы theme обрабатывать отдельно
+    const { theme, ...restData } = data;
+    
+    const updateData: any = { ...restData };
+    if (theme) {
+      updateData.theme = theme;
+    }
+    
     return prisma.user.update({
-      where: { id: userId },
-      data: { passwordHash },
-    });
-  }
-
-  async updateProfile(
-    userId: string,
-    data: { name?: string; phone?: string; timezone?: string; theme?: Theme }
-  ) {
-    return prisma.user.update({
-      where: { id: userId },
-      data,
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        phone: true,
-        timezone: true,
-        theme: true,
-      },
-    });
-  }
-
-  async createRefreshToken(userId: string, token: string, expiresAt: Date) {
-    return prisma.refreshToken.create({
-      data: {
-        userId,
-        token,
-        expiresAt,
-      },
-    });
-  }
-
-  async findRefreshToken(token: string) {
-    return prisma.refreshToken.findUnique({
-      where: { token },
-      include: { user: true },
-    });
-  }
-
-  async deleteRefreshToken(token: string) {
-    return prisma.refreshToken.delete({
-      where: { token },
-    });
-  }
-
-  async deleteAllRefreshTokens(userId: string) {
-    return prisma.refreshToken.deleteMany({
-      where: { userId },
+      where: { id },
+      data: updateData,
     });
   }
 }

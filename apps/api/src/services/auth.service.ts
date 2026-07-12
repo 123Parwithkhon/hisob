@@ -96,42 +96,15 @@ export class AuthService {
     }
   }
 
-  private generateTokens(userId: string, email: string) {
-    const accessToken = jwt.sign(
-      { userId, email },
-      process.env.JWT_SECRET || 'default-secret',
-      { expiresIn: '15m' }
-    );
-
-    const refreshToken = jwt.sign(
-      { userId },
-      process.env.JWT_REFRESH_SECRET || 'default-refresh-secret',
-      { expiresIn: '7d' }
-    );
-
-    return { accessToken, refreshToken };
-  }
-
-  private async saveRefreshToken(userId: string, token: string) {
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 7);
-
-    await prisma.refreshToken.create({
-      data: {
-        token,
-        userId,
-        expiresAt,
-      },
-    });
-  }
-    // Добавь эти методы в конец класса AuthService
-
   async refreshTokens(refreshToken: string) {
-    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'secret') as { userId: string };
+    const decoded = jwt.verify(
+      refreshToken, 
+      process.env.JWT_REFRESH_SECRET || 'hisob-refresh-token-secret-key-2026-67890'
+    ) as { userId: string };
     
     const user = await this.userRepo.findById(decoded.userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new ValidationError('Пользователь не найден');
     }
 
     const tokens = this.generateTokens(user.id, user.email);
@@ -149,12 +122,12 @@ export class AuthService {
   async changePassword(userId: string, oldPassword: string, newPassword: string) {
     const user = await this.userRepo.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new ValidationError('Пользователь не найден');
     }
 
     const isPasswordValid = await bcrypt.compare(oldPassword, user.passwordHash);
     if (!isPasswordValid) {
-      throw new Error('Invalid password');
+      throw new ValidationError('Неверный старый пароль');
     }
 
     const passwordHash = await bcrypt.hash(newPassword, 10);
@@ -164,15 +137,44 @@ export class AuthService {
   async getProfile(userId: string) {
     const user = await this.userRepo.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new ValidationError('Пользователь не найден');
     }
 
     const { passwordHash, ...userWithoutPassword } = user;
     return userWithoutPassword;
   }
 
-  async updateProfile(userId: string, data: { name?: string; phone?: string; timezone?: string; theme?: string }) {
+  async updateProfile(userId: string, data: { name?: string; phone?: string; timezone?: string; theme?: string; currency?: string }) {
     await this.userRepo.update(userId, data);
     return this.getProfile(userId);
+  }
+
+  private generateTokens(userId: string, email: string) {
+    const accessToken = jwt.sign(
+      { userId, email },
+      process.env.JWT_SECRET || 'hisob-super-secret-jwt-key-2026-change-in-production-12345',
+      { expiresIn: '15m' }
+    );
+
+    const refreshToken = jwt.sign(
+      { userId },
+      process.env.JWT_REFRESH_SECRET || 'hisob-refresh-token-secret-key-2026-67890',
+      { expiresIn: '7d' }
+    );
+
+    return { accessToken, refreshToken };
+  }
+
+  private async saveRefreshToken(userId: string, token: string) {
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7);
+
+    await prisma.refreshToken.create({
+      data: {
+        token,
+        userId,
+        expiresAt,
+      },
+    });
   }
 }
