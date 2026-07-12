@@ -2,7 +2,9 @@ services:
   - type: web
     name: hisob-api
     env: node
-    buildCommand: cd ../.. && pnpm install && pnpm build --filter=@hisob/api
+    region: eu-central-1
+    plan: free
+    buildCommand: cd ../.. && pnpm install && pnpm --filter @hisob/api prisma generate && pnpm --filter @hisob/api build
     startCommand: cd apps/api && node dist/server.js
     envVars:
       - key: NODE_ENV

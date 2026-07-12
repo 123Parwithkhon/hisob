@@ -124,4 +124,55 @@ export class AuthService {
       },
     });
   }
+    // Добавь эти методы в конец класса AuthService
+
+  async refreshTokens(refreshToken: string) {
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'secret') as { userId: string };
+    
+    const user = await this.userRepo.findById(decoded.userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const tokens = this.generateTokens(user.id, user.email);
+    await this.saveRefreshToken(user.id, tokens.refreshToken);
+
+    return tokens;
+  }
+
+  async logout(userId: string) {
+    await prisma.refreshToken.deleteMany({
+      where: { userId },
+    });
+  }
+
+  async changePassword(userId: string, oldPassword: string, newPassword: string) {
+    const user = await this.userRepo.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const isPasswordValid = await bcrypt.compare(oldPassword, user.passwordHash);
+    if (!isPasswordValid) {
+      throw new Error('Invalid password');
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    await this.userRepo.update(userId, { passwordHash });
+  }
+
+  async getProfile(userId: string) {
+    const user = await this.userRepo.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const { passwordHash, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  }
+
+  async updateProfile(userId: string, data: { name?: string; phone?: string; timezone?: string; theme?: string }) {
+    await this.userRepo.update(userId, data);
+    return this.getProfile(userId);
+  }
 }
