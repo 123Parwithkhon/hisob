@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 4000;
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://hisob.vercel.app', // Замени на свой домен Vercel после деплоя
+    'https://hisob.vercel.app', // Замени на свой домен после деплоя
   ],
   credentials: true,
 }));
