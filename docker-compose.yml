@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: hisob-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: hisob
+      MYSQL_USER: hisob
+      MYSQL_PASSWORD: hisobpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+volumes:
+  mysql_data:
+    driver: local

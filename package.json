@@ -1,0 +1,18 @@
+{
+  "name": "hisob",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.11.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "api:dev": "turbo run dev --filter=@hisob/api",
+    "web:dev": "turbo run dev --filter=@hisob/web"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.6.0",
+    "prettier": "^3.4.0"
+  }
+}
