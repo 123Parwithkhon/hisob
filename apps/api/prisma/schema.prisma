@@ -28,6 +28,7 @@ model User {
   workUnits     WorkUnit[]
   teams         TeamMember[]
   notifications Notification[]
+  reminders     Reminder[] 
 
   @@map("users")
 }
@@ -174,4 +175,28 @@ model Notification {
 
   @@index([userId, read])
   @@map("notifications")
+}
+model Reminder {
+  id          String          @id @default(cuid())
+  userId      String
+  title       String
+  message     String?
+  scheduledAt DateTime
+  repeat      RepeatType      @default(NONE)
+  isActive    Boolean         @default(true)
+  lastSentAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isActive, scheduledAt])
+  @@map("reminders")
+}
+
+enum RepeatType {
+  NONE
+  DAILY
+  WEEKLY
+  MONTHLY
 }

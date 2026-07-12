@@ -8,8 +8,11 @@ interface User {
   name: string;
   phone?: string;
   avatar?: string;
+  role?: 'USER' | 'ADMIN';
   timezone?: string;
   theme?: 'LIGHT' | 'DARK' | 'SYSTEM';
+  currency?: string;
+  createdAt?: string;
 }
 
 interface AuthState {

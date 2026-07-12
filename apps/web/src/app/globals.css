@@ -1,5 +1,130 @@
 @import "tailwindcss";
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   ФОНОВЫЕ УЗОРЫ ДЛЯ САЙТА
+   Выбираются через data-bg-pattern атрибут
+   ======================================== */
+
+/* 1. Разноцветные точки */
+[data-bg-pattern="gradient-dots"] {
+  --background-pattern: radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 60% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+  --background-pattern-size: auto;
+}
+
+/* 2. Геометрия */
+[data-bg-pattern="geometric"] {
+  --background-pattern: linear-gradient(30deg, rgba(139, 92, 246, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(139, 92, 246, 0.05) 87.5%, rgba(139, 92, 246, 0.05)),
+                        linear-gradient(150deg, rgba(236, 72, 153, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(236, 72, 153, 0.05) 87.5%, rgba(236, 72, 153, 0.05)),
+                        linear-gradient(30deg, rgba(59, 130, 246, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(59, 130, 246, 0.05) 87.5%, rgba(59, 130, 246, 0.05)),
+                        linear-gradient(150deg, rgba(16, 185, 129, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(16, 185, 129, 0.05) 87.5%, rgba(16, 185, 129, 0.05));
+  --background-pattern-size: 80px 80px;
+}
+
+/* 3. Волны */
+[data-bg-pattern="waves"] {
+  --background-pattern: repeating-linear-gradient(
+    45deg,
+    rgba(139, 92, 246, 0.08),
+    rgba(139, 92, 246, 0.08) 10px,
+    rgba(236, 72, 153, 0.08) 10px,
+    rgba(236, 72, 153, 0.08) 20px,
+    rgba(59, 130, 246, 0.08) 20px,
+    rgba(59, 130, 246, 0.08) 30px
+  );
+  --background-pattern-size: auto;
+}
+
+/* 4. Пузыри */
+[data-bg-pattern="bubbles"] {
+  --background-pattern: radial-gradient(circle at 15% 25%, rgba(139, 92, 246, 0.2) 0%, transparent 25%),
+                        radial-gradient(circle at 85% 45%, rgba(236, 72, 153, 0.2) 0%, transparent 30%),
+                        radial-gradient(circle at 35% 75%, rgba(59, 130, 246, 0.2) 0%, transparent 35%),
+                        radial-gradient(circle at 65% 15%, rgba(16, 185, 129, 0.2) 0%, transparent 25%),
+                        radial-gradient(circle at 50% 50%, rgba(251, 191, 36, 0.15) 0%, transparent 30%);
+  --background-pattern-size: auto;
+}
+
+/* 5. Градиентная сетка */
+[data-bg-pattern="mesh"] {
+  --background-pattern: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                        linear-gradient(225deg, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+                        linear-gradient(45deg, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                        linear-gradient(315deg, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+  --background-pattern-size: auto;
+}
+
+/* 6. Цветные полосы */
+[data-bg-pattern="stripes-color"] {
+  --background-pattern: repeating-linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0.08),
+    rgba(139, 92, 246, 0.08) 20px,
+    rgba(236, 72, 153, 0.08) 20px,
+    rgba(236, 72, 153, 0.08) 40px,
+    rgba(59, 130, 246, 0.08) 40px,
+    rgba(59, 130, 246, 0.08) 60px,
+    rgba(16, 185, 129, 0.08) 60px,
+    rgba(16, 185, 129, 0.08) 80px
+  );
+  --background-pattern-size: auto;
+}
+
+/* 7. Концентрические круги */
+[data-bg-pattern="circles-concentric"] {
+  --background-pattern: radial-gradient(circle at 25% 35%, rgba(139, 92, 246, 0.1) 0%, transparent 20%),
+                        radial-gradient(circle at 25% 35%, rgba(236, 72, 153, 0.1) 20%, transparent 40%),
+                        radial-gradient(circle at 25% 35%, rgba(59, 130, 246, 0.1) 40%, transparent 60%),
+                        radial-gradient(circle at 75% 65%, rgba(16, 185, 129, 0.1) 0%, transparent 25%),
+                        radial-gradient(circle at 75% 65%, rgba(251, 191, 36, 0.1) 25%, transparent 45%);
+  --background-pattern-size: auto;
+}
+
+/* 8. Ромбы */
+[data-bg-pattern="diamond"] {
+  --background-pattern: linear-gradient(45deg, rgba(139, 92, 246, 0.08) 25%, transparent 25%),
+                        linear-gradient(-45deg, rgba(236, 72, 153, 0.08) 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, rgba(59, 130, 246, 0.08) 75%),
+                        linear-gradient(-45deg, transparent 75%, rgba(16, 185, 129, 0.08) 75%);
+  --background-pattern-size: 60px 60px;
+}
+
+/* 9. Звёзды */
+[data-bg-pattern="stars"] {
+  --background-pattern: radial-gradient(circle at 20% 30%, rgba(251, 191, 36, 0.15) 0%, transparent 10%),
+                        radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 12%),
+                        radial-gradient(circle at 40% 70%, rgba(236, 72, 153, 0.15) 0%, transparent 8%),
+                        radial-gradient(circle at 70% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 10%),
+                        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.15) 0%, transparent 15%);
+  --background-pattern-size: auto;
+}
+
+/* 10. Минимализм */
+[data-bg-pattern="minimal"] {
+  --background-pattern: transparent;
+  --background-pattern-size: auto;
+}
+
+/* ========================================
+   ДЕФОЛТНЫЙ ФОН (если data-bg-pattern не задан)
+   ======================================== */
+:root {
+  --background-pattern: radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 60% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+  --background-pattern-size: auto;
+}
+
+/* ========================================
+   ТЕМЫ (ЦВЕТА)
+   ======================================== */
 @theme {
   --color-background: hsl(0 0% 100%);
   --color-foreground: hsl(222.2 84% 4.9%);

@@ -1,27 +1,35 @@
 import type { Request, Response, NextFunction } from 'express';
-import { ZodSchema, ZodError, ZodIssue } from 'zod';
+import type { ZodSchema } from 'zod';
 
-export const validate = <T>(
-  schema: ZodSchema<T>,
-  source: 'body' | 'query' | 'params' = 'body'
-) => {
-  return (req: Request, _res: Response, next: NextFunction) => {
+export function validate(schema: ZodSchema) {
+  return (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = schema.parse(req[source]);
-      req[source] = data;
+      const parsed = schema.parse(req.body);
+      req.body = parsed;
       next();
     } catch (error) {
-      if (error instanceof ZodError) {
-        next({
-          name: 'ZodError',
-          errors: error.issues.map((issue: ZodIssue) => ({
-            path: issue.path.join('.'),
+      console.error('\n❌ [VALIDATE] Ошибка валидации:');
+      console.error('❌ Маршрут:', req.method, req.path);
+      console.error('❌ Тело запроса:', req.body);
+
+      if (error && typeof error === 'object' && 'issues' in error) {
+        const zodError = error as { issues: Array<{ path: (string | number)[]; message: string }> };
+        console.error('❌ Ошибки Zod:');
+        zodError.issues.forEach((issue) => {
+          console.error(`   - ${issue.path.join('.')}: ${issue.message}`);
+        });
+
+        return res.status(400).json({
+          success: false,
+          message: 'Ошибка валидации',
+          errors: zodError.issues.map((issue) => ({
+            field: issue.path.join('.'),
             message: issue.message,
           })),
         });
-      } else {
-        next(error);
       }
+
+      next(error);
     }
   };
-};
+}

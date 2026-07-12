@@ -15,5 +15,7 @@ router.post('/quick', validate(quickInputSchema), TransactionController.quickInp
 router.post('/', validate(createTransactionSchema), TransactionController.create);
 router.patch('/:id', validate(updateTransactionSchema), TransactionController.update);
 router.delete('/:id', TransactionController.delete);
+router.get('/by-date-range', TransactionController.getByDateRange);
+router.get('/daily-summary', TransactionController.getDailySummary);
 
 export default router;

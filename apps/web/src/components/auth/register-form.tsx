@@ -44,6 +44,7 @@ export function RegisterForm() {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { confirmPassword, ...registerData } = data;
+      console.log('Отправляем данные:', registerData);
       const response = await api.post('/auth/register', registerData);
       const { user, accessToken, refreshToken } = response.data.data;
       
@@ -55,6 +56,7 @@ export function RegisterForm() {
   const message = error instanceof Error && 'response' in error 
     ? (error as { response?: { data?: { message?: string } } }).response?.data?.message || 'Ошибка регистрации'
         : 'Ошибка регистрации';
+        console.error('Ошибка:', error);
       toast.error(message);
     }
   };

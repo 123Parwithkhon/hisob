@@ -7,13 +7,20 @@ import { errorHandler } from './middlewares/error.middleware.js';
 import authRoutes from './routes/auth.routes.js';
 import transactionRoutes from './routes/transaction.routes.js';
 import categoryRoutes from './routes/category.routes.js';
+   import notificationRoutes from './routes/notification.routes.js';
 import workUnitRoutes from './routes/work-unit.routes.js';
 import goalRoutes from './routes/goal.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://hisob.vercel.app', // Замени на свой домен Vercel после деплоя
+  ],
+  credentials: true,
+}));
 app.use(express.json());
 
 app.get('/', (_req, res) => {
@@ -44,6 +51,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/work-units', workUnitRoutes);
    app.use('/api/analytics', analyticsRoutes);
    app.use('/api/goals', goalRoutes);
+   app.use('/api/notifications', notificationRoutes);
 
 app.use(errorHandler);
 

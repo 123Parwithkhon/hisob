@@ -14,11 +14,18 @@ export class TransactionController {
     }
   }
 
-  static async create(req: AuthRequest, res: Response, next: NextFunction) {
+    static async create(req: AuthRequest, res: Response, next: NextFunction) {
     try {
+      console.log('\n📥 [CONTROLLER] POST /api/transactions');
+      console.log('📥 [CONTROLLER] userId:', req.userId);
+      console.log('📥 [CONTROLLER] Body:', req.body);
+
       const transaction = await transactionService.create(req.userId!, req.body);
+      
+      console.log('✅ [CONTROLLER] Транзакция создана успешно');
       res.status(201).json({ success: true, data: transaction });
     } catch (error) {
+      console.error('❌ [CONTROLLER] Ошибка создания транзакции:', error);
       next(error);
     }
   }
@@ -65,6 +72,40 @@ export class TransactionController {
     try {
       const transaction = await transactionService.quickInput(req.userId!, req.body.command);
       res.status(201).json({ success: true, data: transaction });
+    } catch (error) {
+      next(error);
+    }
+  }
+    static async getByDateRange(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { start, end } = req.query;
+      if (!start || !end) {
+        return res.status(400).json({
+          success: false,
+          message: 'Параметры start и end обязательны',
+        });
+      }
+      const startDate = new Date(start as string);
+      const endDate = new Date(end as string);
+      const data = await transactionService.getByDateRange(req.userId!, startDate, endDate);
+      res.json({ success: true, data });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async getDailySummary(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { date } = req.query;
+      if (!date) {
+        return res.status(400).json({
+          success: false,
+          message: 'Параметр date обязателен',
+        });
+      }
+      const targetDate = new Date(date as string);
+      const data = await transactionService.getDailySummary(req.userId!, targetDate);
+      res.json({ success: true, data });
     } catch (error) {
       next(error);
     }

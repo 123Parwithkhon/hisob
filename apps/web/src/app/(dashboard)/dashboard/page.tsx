@@ -1,20 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-   import { Insights } from '@/components/analytics/insights';
+import { format } from 'date-fns';
+import { toast } from 'sonner';
+import { Plus, Minus, Download } from 'lucide-react';
 import { useAuthStore } from '@/store/auth.store';
-   import { GoalsProgress } from '@/components/goals/goals-progress';
 import { api } from '@/services/api';
+import { exportToExcel } from '@/services/export';
 import { BalanceCard } from '@/components/dashboard/balance-card';
 import { StatCard } from '@/components/dashboard/stat-card';
 import { RecentTransactions } from '@/components/dashboard/recent-transactions';
-import { TransactionModal } from '@/components/transactions/transaction-modal';
-import { Button } from '@/components/ui/button';
-import { Plus, Minus } from 'lucide-react';
-import { toast } from 'sonner';
 import { QuickInput } from '@/components/dashboard/quick-input';
+import { TransactionModal } from '@/components/transactions/transaction-modal';
+import { Insights } from '@/components/analytics/insights';
+import { GoalsProgress } from '@/components/goals/goals-progress';
+import { Button } from '@/components/ui/button';
 
 interface Transaction {
   id: string;
@@ -51,10 +53,19 @@ export default function DashboardPage() {
     enabled: isAuthenticated,
   });
 
+  useEffect(() => {
   if (!isAuthenticated) {
     router.push('/login');
-    return null;
   }
+}, [isAuthenticated, router]);
+
+if (!isAuthenticated) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>
+  );
+}
 
   const openModal = (type: 'INCOME' | 'EXPENSE') => {
     setModalType(type);
@@ -64,6 +75,23 @@ export default function DashboardPage() {
   if (error) {
     toast.error('Ошибка загрузки данных');
   }
+
+  const handleExport = () => {
+    if (!data?.recentTransactions || data.recentTransactions.length === 0) {
+      toast.error('Нет данных для экспорта');
+      return;
+    }
+    try {
+      exportToExcel({
+        transactions: data.recentTransactions,
+        filename: `hisob-dashboard-${format(new Date(), 'yyyy-MM-dd')}.xlsx`,
+        includeStats: true,
+      });
+      toast.success('Файл экспортирован!');
+    } catch {
+      toast.error('Ошибка при экспорте');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -84,18 +112,26 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-4 md:p-6 space-y-6 max-w-7xl pb-24">
+        {/* Заголовок */}
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Dashboard</h1>
+          <Button onClick={handleExport} variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-2" />
+            Экспорт
+          </Button>
         </div>
 
+        {/* Баланс */}
         <BalanceCard balance={data.balance} savingsRate={data.savingsRate} />
 
+        {/* Статистика */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <StatCard title="Сегодня" income={data.today.income} expense={data.today.expense} />
           <StatCard title="Неделя" income={data.week.income} expense={data.week.expense} />
           <StatCard title="Месяц" income={data.month.income} expense={data.month.expense} />
         </div>
 
+        {/* Быстрые действия */}
         <div className="grid grid-cols-2 gap-4">
           <Button
             size="lg"
@@ -114,10 +150,16 @@ export default function DashboardPage() {
             <Minus className="mr-2 h-5 w-5" />
             Расход
           </Button>
-          <QuickInput />
         </div>
-           <Insights />
-              <GoalsProgress />
+
+        {/* Быстрый ввод */}
+        <QuickInput />
+
+        {/* Аналитика и цели */}
+        <Insights />
+        <GoalsProgress />
+
+        {/* Последние операции */}
         <RecentTransactions transactions={data.recentTransactions} />
       </div>
 
