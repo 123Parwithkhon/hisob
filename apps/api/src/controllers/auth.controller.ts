@@ -62,7 +62,7 @@ export class AuthController {
   // Смена пароля
   static async changePassword(req: AuthRequest, res: Response, next: NextFunction) {
     try {
-      const result = await authService.changePassword(req.userId!, req.body);
+      const result = await authService.changePassword(req.userId, req.body.oldPassword, req.body.newPassword);
       res.json({
         success: true,
         data: result,
