@@ -1,8 +1,13 @@
-node_modules
-dist
-.next
+node_modules/
+.next/
+dist/
+build/
+.turbo/
+
+# Environment
 .env
 .env.local
-*.log
-.DS_Store
-.turbo
+.env.production
+apps/api/.env
+apps/api/.env.local
+apps/api/.env.production
