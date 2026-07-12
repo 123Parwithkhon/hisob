@@ -1,5 +1,5 @@
 import { CategoryRepository } from '../repositories/category.repository.js';
-import type { TransactionType } from '@prisma/client';
+type TransactionType = 'INCOME' | 'EXPENSE';
 import type { CreateCategoryDto, UpdateCategoryDto } from '../validators/category.validator.js';
 import { NotFoundError, ValidationError } from '../utils/errors.js';
 

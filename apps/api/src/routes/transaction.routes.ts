@@ -5,7 +5,7 @@ import { validate } from '../middlewares/validate.middleware.js';
 import { quickInputSchema } from '../validators/quick-input.validator.js';
 import { createTransactionSchema, updateTransactionSchema } from '../validators/transaction.validator.js';
 
-const router = Router();
+export const router: Router = Router();
 
 router.use(authGuard);
 

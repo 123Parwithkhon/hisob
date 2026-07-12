@@ -1,5 +1,6 @@
 import { prisma } from '../config/prisma.js';
-import type { TransactionType } from '@prisma/client';
+
+type TransactionType = 'INCOME' | 'EXPENSE';
 import type { CreateTransactionDto, UpdateTransactionDto } from '../validators/transaction.validator.js';
 
 export class TransactionRepository {

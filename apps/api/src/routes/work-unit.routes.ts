@@ -4,7 +4,7 @@ import { authGuard } from '../middlewares/auth.middleware.js';
 import { validate } from '../middlewares/validate.middleware.js';
 import { createWorkUnitSchema, updateWorkUnitSchema } from '../validators/work-unit.validator.js';
 
-const router = Router();
+export const router: Router = Router();
 
 router.use(authGuard);
 

@@ -9,7 +9,7 @@ import {
   updateProfileSchema,
 } from '../validators/auth.validator.js';
 
-const router = Router();
+export const router: Router = Router();
 
 // Публичные роуты (без авторизации)
 router.post('/register', validate(registerSchema), AuthController.register);
