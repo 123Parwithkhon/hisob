@@ -14,12 +14,17 @@ import goalRoutes from './routes/goal.routes.js';
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+app.use(express.json());
+
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'https://hisob.vercel.app', // Замени на свой домен после деплоя
+    'https://hisob-web.vercel.app', // Твой основной домен Vercel
+    'https://hisob-web-git-main-123parwithkhons-projects.vercel.app' // Резервный домен Vercel
   ],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
