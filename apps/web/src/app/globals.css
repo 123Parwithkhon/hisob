@@ -154,3 +154,29 @@
     @apply bg-background text-foreground;
   }
 }
+/* Исправление календаря для мобильных */
+@media (max-width: 640px) {
+  /* Уменьшаем шрифт дней */
+  .calendar-day {
+    font-size: 0.875rem; /* 14px */
+    padding: 0.5rem;
+  }
+  
+  /* Делаем сетку компактнее */
+  .calendar-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+  }
+  
+  /* Убираем лишние отступы */
+  .calendar-header {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+  
+  /* Адаптивная высота ячеек */
+  .calendar-cell {
+    min-height: 40px;
+    aspect-ratio: 1;
+  }
+}

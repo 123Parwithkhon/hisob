@@ -142,16 +142,24 @@ export function TransactionModal({ isOpen, onClose, defaultType = 'INCOME' }: Tr
             </div>
 
             {/* Сумма */}
+                        {/* Сумма */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Сумма (PLN)</label>
+              <label className="text-sm font-medium">Сумма</label>
               <Input
                 type="number"
                 step="0.01"
                 placeholder="0.00"
-                {...register('amount', { valueAsNumber: true })}
+                {...register('amount', { 
+                  valueAsNumber: true,
+                  // Эта магия предотвращает появление "0" и корректно работает с десятичными
+                  setValueAs: (v: string) => (v === "" ? undefined : parseFloat(v))
+                })}
                 error={errors.amount?.message}
-                className="text-2xl font-bold text-center h-14"
+                className="text-2xl font-bold text-center h-14 placeholder:text-muted-foreground/40"
               />
+              <p className="text-xs text-muted-foreground text-right">
+                Можно вводить копейки/гроши (например: 150.50)
+              </p>
             </div>
 
             {/* Категория */}

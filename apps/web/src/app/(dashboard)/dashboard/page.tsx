@@ -12,7 +12,6 @@ import { exportToExcel } from '@/services/export';
 import { BalanceCard } from '@/components/dashboard/balance-card';
 import { StatCard } from '@/components/dashboard/stat-card';
 import { RecentTransactions } from '@/components/dashboard/recent-transactions';
-import { QuickInput } from '@/components/dashboard/quick-input';
 import { TransactionModal } from '@/components/transactions/transaction-modal';
 import { Insights } from '@/components/analytics/insights';
 import { GoalsProgress } from '@/components/goals/goals-progress';
@@ -151,9 +150,6 @@ if (!isAuthenticated) {
             Расход
           </Button>
         </div>
-
-        {/* Быстрый ввод */}
-        <QuickInput />
 
         {/* Аналитика и цели */}
         <Insights />

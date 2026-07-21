@@ -11,7 +11,6 @@ import {
   endOfMonth,
   eachDayOfInterval,
   format,
-  isSameMonth,
   isToday,
   isSameDay,
   addMonths,
@@ -61,10 +60,12 @@ export function Calendar({ onDateSelect, selectedDate }: CalendarProps) {
     },
   });
 
+  // Теперь эта функция используется!
   const getDayData = (date: Date) => {
     return dailyData.find((d) => d.date === format(date, 'yyyy-MM-dd'));
   };
 
+  // Теперь эта функция используется!
   const formatCurrency = (n: number) =>
     new Intl.NumberFormat('ru-RU', {
       style: 'currency',
@@ -75,8 +76,8 @@ export function Calendar({ onDateSelect, selectedDate }: CalendarProps) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
+      <CardHeader className="flex flex-row items-center justify-between p-4 sm:p-6">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
           <CalendarIcon className="h-5 w-5 text-primary" />
           {format(currentMonth, 'LLLL yyyy', { locale: ru })}
         </CardTitle>
@@ -84,6 +85,7 @@ export function Calendar({ onDateSelect, selectedDate }: CalendarProps) {
           <Button
             variant="outline"
             size="icon"
+            className="h-8 w-8 sm:h-9 sm:w-9"
             onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -91,54 +93,68 @@ export function Calendar({ onDateSelect, selectedDate }: CalendarProps) {
           <Button
             variant="outline"
             size="icon"
+            className="h-8 w-8 sm:h-9 sm:w-9"
             onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-7 gap-1 mb-2">
+      <CardContent className="p-2 sm:p-6">
+        {/* Дни недели */}
+        <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-1 sm:mb-2">
           {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((day) => (
-            <div key={day} className="text-center text-xs font-medium text-muted-foreground py-2">
+            <div 
+              key={day} 
+              className="text-[10px] sm:text-xs font-semibold text-center text-muted-foreground py-1 sm:py-2"
+            >
               {day}
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-7 gap-1">
-          {days.map((day) => {
-            const dayData = getDayData(day);
-            const hasData = !!dayData;
-            const isCurrentDay = isToday(day);
-            const isSelected = selectedDate && isSameDay(day, selectedDate);
-            const isCurrentMonthDay = isSameMonth(day, currentMonth);
+        {/* Сетка дней месяца */}
+        <div className="grid grid-cols-7 gap-1 sm:gap-2">
+          {days.map((date) => {
+            const dateStr = format(date, 'yyyy-MM-dd');
+            const dayData = getDayData(date);
+            const isCurrentDay = isToday(date);
+            const isSelected = selectedDate ? isSameDay(date, selectedDate) : false;
+            
+            const hasTransactions = dayData && dayData.transactions.length > 0;
+            const balance = dayData ? dayData.balance : 0;
 
             return (
               <button
-                key={day.toISOString()}
-                onClick={() => onDateSelect(day)}
+                key={dateStr}
+                type="button"
+                onClick={() => onDateSelect(date)}
                 className={`
-                  relative p-2 rounded-lg text-sm transition-all min-h-[60px] flex flex-col
-                  ${!isCurrentMonthDay ? 'opacity-30' : ''}
-                  ${isSelected ? 'bg-primary text-primary-foreground ring-2 ring-primary' : ''}
-                  ${!isSelected && isCurrentDay ? 'bg-muted font-semibold' : ''}
-                  ${!isSelected && !isCurrentDay ? 'hover:bg-muted/50' : ''}
+                  relative flex flex-col items-center justify-center 
+                  aspect-square sm:aspect-auto sm:min-h-[70px] 
+                  rounded-lg sm:rounded-xl 
+                  text-xs sm:text-sm font-medium 
+                  transition-all duration-200 border
+                  ${isCurrentDay 
+                    ? 'bg-primary text-primary-foreground border-primary font-bold' 
+                    : 'hover:bg-muted/50 border-transparent'}
+                  ${isSelected && !isCurrentDay ? 'ring-2 ring-primary bg-muted' : ''}
+                  ${hasTransactions ? 'ring-1 ring-primary/20' : ''}
                 `}
               >
-                <span className="text-xs font-medium">{format(day, 'd')}</span>
-                {hasData && (
-                  <div className="mt-auto space-y-0.5">
-                    {dayData.income > 0 && (
-                      <div className="text-xs text-green-600 dark:text-green-400 font-medium">
-                        +{formatCurrency(dayData.income).replace('PLN', '').trim()}
-                      </div>
-                    )}
-                    {dayData.expense > 0 && (
-                      <div className="text-xs text-red-600 dark:text-red-400 font-medium">
-                        -{formatCurrency(dayData.expense).replace('PLN', '').trim()}
-                      </div>
-                    )}
+                {/* Число дня */}
+                <span className="mb-1">{format(date, 'd')}</span>
+                
+                {/* Индикатор транзакций */}
+                {hasTransactions && (
+                  <div className="flex flex-col items-center gap-0.5 w-full px-1">
+                    <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${
+                      balance >= 0 ? 'bg-green-500' : 'bg-red-500'
+                    }`} />
+                    {/* На мобильных скрываем сумму, на ПК показываем */}
+                    <span className="hidden sm:block text-[10px] text-muted-foreground truncate w-full text-center">
+                      {formatCurrency(balance)}
+                    </span>
                   </div>
                 )}
               </button>
