@@ -10,6 +10,7 @@ import categoryRoutes from './routes/category.routes.js';
    import notificationRoutes from './routes/notification.routes.js';
 import workUnitRoutes from './routes/work-unit.routes.js';
 import goalRoutes from './routes/goal.routes.js';
+import transactionRouter from './routes/transaction.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -57,6 +58,7 @@ app.use('/api/work-units', workUnitRoutes);
    app.use('/api/goals', goalRoutes);
    app.use('/api/notifications', notificationRoutes);
    app.use('/api/analytics', analyticsRouter);
+   app.use('/api/transactions', transactionRouter);
 
 app.use(errorHandler);
 

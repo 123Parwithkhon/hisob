@@ -202,14 +202,11 @@ model Reminder {
      category    Category @relation(fields: [categoryId], references: [id])
      userId      String
      user        User     @relation(fields: [userId], references: [id])
-     
      amount      Float
-     period      String   // "WEEK" или "MONTH"
+     period      String
      startDate   DateTime
-     
      createdAt   DateTime @default(now())
      updatedAt   DateTime @updatedAt
-
      @@index([userId, categoryId])
      @@index([userId, startDate])
    }
