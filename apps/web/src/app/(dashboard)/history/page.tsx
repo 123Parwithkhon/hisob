@@ -110,14 +110,14 @@ export default function HistoryPage() {
 
             <div className="flex gap-2">
               <Button
-                variant={typeFilter === 'ALL' ? 'primary' : 'outline'}
+                variant={typeFilter === 'ALL' ? 'default' : 'outline'}
                 onClick={() => setTypeFilter('ALL')}
                 size="sm"
               >
                 Все
               </Button>
               <Button
-                variant={typeFilter === 'INCOME' ? 'primary' : 'outline'}
+                variant={typeFilter === 'INCOME' ? 'default' : 'outline'}
                 onClick={() => setTypeFilter('INCOME')}
                 size="sm"
               >
@@ -125,7 +125,7 @@ export default function HistoryPage() {
                 Доходы
               </Button>
               <Button
-                variant={typeFilter === 'EXPENSE' ? 'primary' : 'outline'}
+                variant={typeFilter === 'EXPENSE' ? 'default' : 'outline'}
                 onClick={() => setTypeFilter('EXPENSE')}
                 size="sm"
               >
