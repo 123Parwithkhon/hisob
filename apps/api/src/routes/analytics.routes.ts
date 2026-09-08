@@ -1,14 +1,17 @@
-import { Router } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { AnalyticsController } from '../controllers/analytics.controller.js';
-import { authGuard } from '../middlewares/auth.middleware.js';
 
-export const router: Router = Router();
+export const analyticsRouter: Router = Router();
 
-router.use(authGuard);
+// Временный middleware для проверки авторизации
+// (заменим на правильный, когда узнаем название)
+const requireAuth = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ success: false, message: 'Не авторизован' });
+  }
+  next();
+};
 
-router.get('/monthly-trend', AnalyticsController.getMonthlyTrend);
-router.get('/categories/:type', AnalyticsController.getCategoryBreakdown);
-router.get('/savings', AnalyticsController.getSavingsProgress);
-router.get('/insights', AnalyticsController.getInsights);
-
-export default router;
+analyticsRouter.use(requireAuth);
+analyticsRouter.get('/expenses-by-category', AnalyticsController.getExpensesByCategory);

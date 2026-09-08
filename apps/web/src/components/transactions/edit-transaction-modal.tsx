@@ -9,13 +9,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { useWatch } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/services/api';
 import { toast } from 'sonner';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
-interface Transaction {
+export interface EditTransactionData {
   id: string;
   type: 'INCOME' | 'EXPENSE';
   amount: number;
@@ -26,7 +27,7 @@ interface Transaction {
 }
 
 interface EditTransactionModalProps {
-  transaction: Transaction | null;
+  transaction: EditTransactionData | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onClose: () => void;
@@ -39,8 +40,9 @@ export function EditTransactionModal({
   onClose,
 }: EditTransactionModalProps) {
   const queryClient = useQueryClient();
-  
-  const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<Transaction>();
+
+const { register, handleSubmit, setValue, reset, control, formState: { errors } } = useForm<EditTransactionData>();
+
 
   useEffect(() => {
     if (transaction) {
@@ -54,7 +56,7 @@ export function EditTransactionModal({
   }, [transaction, setValue]);
 
   const updateMutation = useMutation({
-    mutationFn: async (data: Partial<Transaction>) => {
+    mutationFn: async (data: Partial<EditTransactionData>) => {
       await api.put(`/transactions/${transaction?.id}`, data);
     },
     onSuccess: () => {
@@ -69,9 +71,11 @@ export function EditTransactionModal({
     },
   });
 
-  const onSubmit = (data: Partial<Transaction>) => {
+  const onSubmit = (data: Partial<EditTransactionData>) => {
     updateMutation.mutate(data);
   };
+
+  const currentType = useWatch({ control, name: 'type', defaultValue: 'EXPENSE' });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -79,13 +83,13 @@ export function EditTransactionModal({
         <DialogHeader>
           <DialogTitle>Редактировать транзакцию</DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Тип транзакции */}
           <div className="flex gap-2">
             <Button
               type="button"
-              variant={watch('type') === 'INCOME' ? 'default' : 'outline'}
+              // ✅ ИЗМЕНЕНО: 'default' вместо 'primary'
+              variant={currentType === 'INCOME' ? 'default' : 'outline'}
               className="flex-1"
               onClick={() => setValue('type', 'INCOME')}
             >
@@ -94,7 +98,7 @@ export function EditTransactionModal({
             </Button>
             <Button
               type="button"
-              variant={watch('type') === 'EXPENSE' ? 'default' : 'outline'}
+              variant={currentType === 'EXPENSE' ? 'default' : 'outline'}
               className="flex-1"
               onClick={() => setValue('type', 'EXPENSE')}
             >
@@ -103,7 +107,6 @@ export function EditTransactionModal({
             </Button>
           </div>
 
-          {/* Сумма */}
           <div>
             <label className="text-sm font-medium">Сумма</label>
             <Input
@@ -111,28 +114,26 @@ export function EditTransactionModal({
               step="0.01"
               {...register('amount', { required: 'Обязательное поле', valueAsNumber: true })}
             />
-            {errors.amount && <p className="text-red-500 text-xs">{errors.amount.message}</p>}
+            {errors.amount && <p className="text-red-500 text-xs mt-1">{errors.amount.message}</p>}
           </div>
 
-          {/* Дата */}
           <div>
             <label className="text-sm font-medium">Дата</label>
             <Input type="date" {...register('date', { required: 'Обязательное поле' })} />
-            {errors.date && <p className="text-red-500 text-xs">{errors.date.message}</p>}
+            {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date.message}</p>}
           </div>
 
-          {/* Комментарий */}
           <div>
             <label className="text-sm font-medium">Комментарий</label>
             <Input {...register('comment')} placeholder="За что / откуда..." />
           </div>
 
-          <Button 
-            type="submit" 
-            className="w-full" 
-            isLoading={updateMutation.isPending}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={updateMutation.isPending}
           >
-            Сохранить изменения
+            {updateMutation.isPending ? 'Сохранение...' : 'Сохранить изменения'}
           </Button>
         </form>
       </DialogContent>

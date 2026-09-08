@@ -1,45 +1,55 @@
-import type { Response, NextFunction } from 'express';
-import { AnalyticsService } from '../services/analytics.service.js';
-import type { AuthRequest } from '../middlewares/auth.middleware.js';
-
-const analyticsService = new AnalyticsService();
+import { Request, Response } from 'express';
+import { prisma } from '../config/prisma.js';
 
 export class AnalyticsController {
-  static async getMonthlyTrend(req: AuthRequest, res: Response, next: NextFunction) {
-    try {
-      const { months } = req.query;
-      const data = await analyticsService.getMonthlyTrend(req.userId!, months ? Number(months) : 6);
-      res.json({ success: true, data });
-    } catch (error) {
-      next(error);
-    }
-  }
+  // Получить расходы по категориям за последний месяц
+  static async getExpensesByCategory(req: Request, res: Response) {
+    const userId = (req as any).user?.id;
 
-  static async getCategoryBreakdown(req: AuthRequest, res: Response, next: NextFunction) {
-    try {
-      const { type } = req.params;
-      const data = await analyticsService.getCategoryBreakdown(req.userId!, type as 'INCOME' | 'EXPENSE');
-      res.json({ success: true, data });
-    } catch (error) {
-      next(error);
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Не авторизован' });
     }
-  }
 
-  static async getSavingsProgress(req: AuthRequest, res: Response, next: NextFunction) {
-    try {
-      const data = await analyticsService.getSavingsProgress(req.userId!);
-      res.json({ success: true, data });
-    } catch (error) {
-      next(error);
-    }
-  }
+    // Дата начала последнего месяца
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 1);
 
-  static async getInsights(req: AuthRequest, res: Response, next: NextFunction) {
-    try {
-      const data = await analyticsService.getInsights(req.userId!);
-      res.json({ success: true, data });
-    } catch (error) {
-      next(error);
-    }
+    // Группируем транзакции по категориям
+    const expenses = await prisma.transaction.groupBy({
+      by: ['categoryId'],
+      where: {
+        userId,
+        type: 'EXPENSE',
+        date: { gte: startDate },
+      },
+      _sum: {
+        amount: true,
+      },
+      orderBy: {
+        _sum: {
+          amount: 'desc',
+        },
+      },
+    });
+
+    // Получаем информацию о категориях
+    const categoryIds = expenses.map((e) => e.categoryId);
+    const categories = await prisma.category.findMany({
+      where: {
+        id: { in: categoryIds },
+      },
+    });
+
+    // Формируем данные для графика
+    const chartData = expenses.map((expense) => {
+      const category = categories.find((c) => c.id === expense.categoryId);
+      return {
+        name: category?.name || 'Без категории',
+        value: Number(expense._sum.amount) || 0,
+        color: category?.color || '#8884d8',
+      };
+    }).filter((item) => item.value > 0);
+
+    res.json({ success: true, data: chartData });
   }
 }

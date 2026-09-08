@@ -1,5 +1,7 @@
 'use client';
 
+import { EditTransactionModal } from '@/components/transactions/edit-transaction-modal';
+   import { EditTransactionData } from '@/components/transactions/edit-transaction-modal';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
@@ -21,6 +23,7 @@ interface Transaction {
   id: string;
   type: 'INCOME' | 'EXPENSE';
   amount: number;
+  categoryId: string; 
   date: string;
   comment?: string;
   category?: { name: string; icon?: string };
@@ -42,6 +45,8 @@ export default function DashboardPage() {
   const { isAuthenticated } = useAuthStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'INCOME' | 'EXPENSE'>('INCOME');
+  const [editingTransaction, setEditingTransaction] = useState<EditTransactionData | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { data, isLoading, error } = useQuery<DashboardData>({
     queryKey: ['dashboard'],
@@ -108,7 +113,7 @@ if (!isAuthenticated) {
     );
   }
 
-  return (
+    return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto p-4 md:p-6 space-y-6 max-w-7xl pb-24">
         {/* Заголовок */}
@@ -151,15 +156,28 @@ if (!isAuthenticated) {
           </Button>
         </div>
 
-        {/* Аналитика и цели */}
         <Insights />
         <GoalsProgress />
 
-        {/* Последние операции */}
-        <RecentTransactions transactions={data.recentTransactions} />
+        <RecentTransactions 
+          transactions={data.recentTransactions} 
+          onEditTransaction={(transaction) => {
+            setEditingTransaction(transaction as EditTransactionData);
+            setIsEditModalOpen(true);
+          }}
+        />
       </div>
-
       <TransactionModal isOpen={modalOpen} onClose={() => setModalOpen(false)} defaultType={modalType} />
+
+      <EditTransactionModal
+        transaction={editingTransaction}
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingTransaction(null);
+        }}
+      />
     </div>
   );
 }

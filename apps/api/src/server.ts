@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
-   import analyticsRoutes from './routes/analytics.routes.js';
+   import { analyticsRouter } from './routes/analytics.routes.js';
 import { prisma } from './config/prisma.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import authRoutes from './routes/auth.routes.js';
@@ -54,9 +54,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/work-units', workUnitRoutes);
-   app.use('/api/analytics', analyticsRoutes);
    app.use('/api/goals', goalRoutes);
    app.use('/api/notifications', notificationRoutes);
+   app.use('/api/analytics', analyticsRouter);
 
 app.use(errorHandler);
 

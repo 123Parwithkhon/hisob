@@ -1,9 +1,12 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Geist } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { QueryProvider } from '@/lib/query-provider';
 import './globals.css';
 import { InstallPrompt } from '@/components/pwa/install-prompt';
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({ subsets: ['latin', 'cyrillic'] });
 
@@ -32,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ru">
+    <html lang="ru" className={cn("font-sans", geist.variable)}>
       <head>
         <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />

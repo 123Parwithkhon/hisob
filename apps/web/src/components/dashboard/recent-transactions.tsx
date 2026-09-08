@@ -9,7 +9,9 @@ interface Transaction {
   id: string;
   type: 'INCOME' | 'EXPENSE';
   amount: number;
+  categoryId: string;
   date: string;
+  comment?: string;
   category?: { name: string; icon?: string };
 }
 
