@@ -236,7 +236,7 @@ export function TransactionModal({ isOpen, onClose, defaultType = 'INCOME' }: Tr
             <Button
               type="submit"
               className="w-full h-12 text-lg"
-              isLoading={isLoading}
+              disabled={isLoading}
               style={{
                 backgroundColor: currentType === 'INCOME' ? '#22c55e' : '#ef4444',
               }}
