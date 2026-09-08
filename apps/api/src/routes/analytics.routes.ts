@@ -7,6 +7,5 @@ export const analyticsRouter: Router = Router();
 analyticsRouter.use(authGuard);
 
 analyticsRouter.get('/expenses-by-category', AnalyticsController.getExpensesByCategory);
-
 analyticsRouter.get('/insights', AnalyticsController.getInsights);
 analyticsRouter.get('/monthly-trend', AnalyticsController.getMonthlyTrend);
