@@ -29,6 +29,7 @@ model User {
   teams         TeamMember[]
   notifications Notification[]
   reminders     Reminder[] 
+     budgets     Budget[]
 
   @@map("users")
 }
@@ -67,6 +68,7 @@ model Category {
   createdAt DateTime        @default(now())
   user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   transactions Transaction[]
+     budgets     Budget[]
 
   @@unique([userId, name, type])
   @@index([userId, type])
@@ -193,6 +195,24 @@ model Reminder {
   @@index([userId, isActive, scheduledAt])
   @@map("reminders")
 }
+
+   model Budget {
+     id          String   @id @default(cuid())
+     categoryId  String
+     category    Category @relation(fields: [categoryId], references: [id])
+     userId      String
+     user        User     @relation(fields: [userId], references: [id])
+     
+     amount      Float
+     period      String   // "WEEK" или "MONTH"
+     startDate   DateTime
+     
+     createdAt   DateTime @default(now())
+     updatedAt   DateTime @updatedAt
+
+     @@index([userId, categoryId])
+     @@index([userId, startDate])
+   }
 
 enum RepeatType {
   NONE
