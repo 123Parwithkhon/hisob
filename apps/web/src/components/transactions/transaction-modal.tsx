@@ -241,7 +241,7 @@ export function TransactionModal({ isOpen, onClose, defaultType = 'INCOME' }: Tr
                 backgroundColor: currentType === 'INCOME' ? '#22c55e' : '#ef4444',
               }}
             >
-              {currentType === 'INCOME' ? 'Добавить доход' : 'Добавить расход'}
+              {isLoading ? 'Сохранение...' : (currentType === 'INCOME' ? 'Добавить доход' : 'Добавить расход')}
             </Button>
           </CardContent>
         </form>
